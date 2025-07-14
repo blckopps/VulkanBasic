@@ -39,7 +39,7 @@ BOOL bIsInitialized = FALSE;
 
 
 //vulkan global variables
-const char* gpSzAppName = "VK-APP";
+const char* gpSzAppName = "VK-BLUESCREEN";
 
 //store current index for swapchain image
 uint32_t currentImageIndex = UINT32_MAX;
@@ -96,7 +96,7 @@ std::vector<VkImageView> swapchainImageViewVector;
 SwapChainCreateData vkColorSpaceFormatAndPresntModeData;
 
 //Command pool & command buffer
-VkCommandPool vkCommandPool = VK_NULL_HANDLE;
+VkCommandPool vkCommandBufferPool = VK_NULL_HANDLE;
 std::vector<VkCommandBuffer> vkCommandBuffersVector;
 
 //Render Pass
@@ -167,7 +167,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	RegisterClassEx(&wndclassex);
 
 
-	hwnd = CreateWindowEx(WS_EX_ACCEPTFILES, szAppName, TEXT("01-SSK:Vulkan"),
+	hwnd = CreateWindowEx(WS_EX_ACCEPTFILES, szAppName, TEXT("01-Vulkan Blue Screen"),
 		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
 		x, y,
 		WIN_WIDTH, WIN_HEIGHT, NULL, NULL, hInstance, NULL);
@@ -589,6 +589,45 @@ void UnInitialize(void)
 		DestroyWindow(gHwnd);
 		gHwnd = NULL;
 	}
+
+	//Vulkan resource cleanup
+	if (vkSwapchainKHR)
+	{
+		vkDestroySwapchainKHR(vkDevice, vkSwapchainKHR, nullptr);
+		vkSwapchainKHR = VK_NULL_HANDLE;
+	}
+
+	//clean command buffers
+	for (auto& commandBuffer: vkCommandBuffersVector)
+	{
+		vkFreeCommandBuffers(vkDevice, vkCommandBufferPool, 1, &commandBuffer);
+	}
+
+	//clear command buffer pool
+	if (vkCommandBufferPool)
+	{
+		vkDestroyCommandPool(vkDevice, vkCommandBufferPool, nullptr);
+		vkCommandBufferPool = VK_NULL_HANDLE;
+	}
+
+	//clean renderpass
+	if (vkRenderPass)
+	{
+		vkDestroyRenderPass(vkDevice, vkRenderPass,	nullptr);
+		vkRenderPass = VK_NULL_HANDLE;
+	}
+
+	//clean fences
+	for (auto& fence: vkFencesVector)
+	{
+		vkDestroyFence(vkDevice, fence, nullptr);
+	}
+
+	//semaphore cleanup
+	if (vkSemaphore_backbuffer)
+		vkDestroySemaphore(vkDevice, vkSemaphore_backbuffer, nullptr);
+	if (vkSemaphore_renderComplete)
+		vkDestroySemaphore(vkDevice, vkSemaphore_renderComplete, nullptr);
 }
 
 //Create vulkan instance
@@ -1062,7 +1101,7 @@ VkResult createCommandBufferPool()
 	vkCommandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	vkCommandPoolCreateInfo.queueFamilyIndex = graphicsQueueFamilyIndex;
 
-	vkResult = vkCreateCommandPool(vkDevice, &vkCommandPoolCreateInfo, nullptr, &vkCommandPool);
+	vkResult = vkCreateCommandPool(vkDevice, &vkCommandPoolCreateInfo, nullptr, &vkCommandBufferPool);
 	if (vkResult == VK_SUCCESS)
 	{
 		LogData("Command pool created!!!");
@@ -1079,7 +1118,7 @@ VkResult createCommandBuffers()
 	VkCommandBufferAllocateInfo vkCommandBufferAllocInfo{};
 	vkCommandBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	vkCommandBufferAllocInfo.pNext = nullptr;
-	vkCommandBufferAllocInfo.commandPool = vkCommandPool;
+	vkCommandBufferAllocInfo.commandPool = vkCommandBufferPool;
 	vkCommandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	vkCommandBufferAllocInfo.commandBufferCount = 1;
 
