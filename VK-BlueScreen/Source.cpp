@@ -501,6 +501,7 @@ VkResult Display()
 
 	/*
 	* Use fence to allow host to wait for completion of execution of previous command buffers.
+	* Host wait for device- use Fences.
 	*/
 	vkResult = vkWaitForFences(vkDevice, 1, &vkFencesVector[currentImageIndex], VK_TRUE, UINT64_MAX);
 	if (vkResult != VK_SUCCESS)
@@ -516,16 +517,25 @@ VkResult Display()
 		return vkResult;
 	}
 
+	//For which state we want to wait for command buffer/s to complete.
+	//We have only one which is color attachment, still we need one member array.
 	const VkPipelineStageFlags waitDstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 
+
+	//We can create multiple submit infoes and submit them.
 	VkSubmitInfo vkSubmitInfo{};
 	vkSubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	vkSubmitInfo.pNext = nullptr;
 	vkSubmitInfo.pWaitDstStageMask = &waitDstStageMask;
+
+	//For whoom command buffers should wait, There num and semaphores
 	vkSubmitInfo.waitSemaphoreCount = 1;
 	vkSubmitInfo.pWaitSemaphores = &vkSemaphore_backbuffer;
+
 	vkSubmitInfo.commandBufferCount = 1;
 	vkSubmitInfo.pCommandBuffers = &vkCommandBuffersVector[currentImageIndex];
+
+	//After work complete, Whoom should we singaled, There num and semaphores
 	vkSubmitInfo.signalSemaphoreCount = 1;
 	vkSubmitInfo.pSignalSemaphores = &vkSemaphore_renderComplete;
 
