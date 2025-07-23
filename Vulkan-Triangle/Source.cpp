@@ -132,6 +132,12 @@ std::vector<VkFence> vkFencesVector;
 VkShaderModule vkShaderModuleVertex = VK_NULL_HANDLE;
 VkShaderModule vkShaderModuleFragment = VK_NULL_HANDLE;
 
+//Descriptor set layout
+VkDescriptorSetLayout vkDescriptorSetLayout = VK_NULL_HANDLE;
+
+//Pipeline layout
+VkPipelineLayout vkPipelineLayout = VK_NULL_HANDLE;
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
 {
@@ -651,6 +657,19 @@ void UnInitialize(void)
 	{
 		vkDestroyCommandPool(vkDevice, vkCommandBufferPool, nullptr);
 		vkCommandBufferPool = VK_NULL_HANDLE;
+	}
+
+	//clean vertex buffer's deivce memory
+	if (vertexDataPosition.vkDeviceMemory)
+	{
+		vkFreeMemory(vkDevice, vertexDataPosition.vkDeviceMemory, nullptr);
+		vertexDataPosition.vkDeviceMemory = VK_NULL_HANDLE;
+	}
+
+	if (vertexDataPosition.vkBuffer)
+	{
+		vkDestroyBuffer(vkDevice, vertexDataPosition.vkBuffer, nullptr);
+		vertexDataPosition.vkBuffer = VK_NULL_HANDLE;
 	}
 
 	//clean renderpass
@@ -1483,6 +1502,28 @@ VkShaderModule loadSPIRVShader(const std::string &shaderPath)
 	return VK_NULL_HANDLE;
 }
 
+//INFO FOR SHADERS
+// Shader attributes/Properties: Position, texcoords, colors
+// Shader resources: Uniforms, Constant buffers, textures, Samplers
+// Vulkan->Storage buffers, Push constant
+// ***************************************************
+// Resources used by shaders are called as Descriptors.
+// set of descriptors called as descriptorset and there ordered arrangement
+// accroding to there type is called descriptor set layuout.
+// Using Descriptor set layout, Pipeline layout is formed.\
+// ******************************************************
+// Ordered type wise arrangement of descriptor set is called as descriptor set layuout.
+// Arrangement of such descriptor set layout is called pipeline layout.
+// ***************************************************
+// Not all resouces are descriptors.
+// "Textures, Samplers, UBO, Storage buffers, uniforms/UBO" are descriptors
+// "Push constants, Storage buffers" are not descriptors
+// ***************************************************
+// DescriptorSetLayouts are different for different pipelines.
+// You need to provide DescriptorSetLayout, desc set even if you don't 
+// have any descriptors. Provide empty descriptor set.
+// ***************************************************
+// 
 //Create vertex buffers
 VkResult createVertexBuffer()
 {
@@ -1583,5 +1624,60 @@ VkResult createVertexBuffer()
 	//6.Unmap
 	vkUnmapMemory(vkDevice, vertexDataPosition.vkDeviceMemory);
 
+	return vkResult;
+}
+
+//Create descriptor set layout
+// Descriptor set layouts define the interface between our application and the shader
+// Basically connects the different shader stages to descriptors for binding uniform buffers, image samplers, etc.
+// So every shader binding should map to one descriptor set layout binding
+VkResult createDescriptorSetLayout()
+{
+	VkResult vkResult = VK_SUCCESS;
+
+	VkDescriptorSetLayoutCreateInfo vkDescriptorSetLayoutInfo{};
+	vkDescriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	vkDescriptorSetLayoutInfo.pNext = nullptr;
+	vkDescriptorSetLayoutInfo.flags = 0;		//reserved
+	vkDescriptorSetLayoutInfo.bindingCount = 0;
+	vkDescriptorSetLayoutInfo.pBindings = nullptr;	////pBindings is array of struct VkDescriptorSetLayoutBinding
+
+	vkResult = vkCreateDescriptorSetLayout(vkDevice, &vkDescriptorSetLayoutInfo, nullptr, &vkDescriptorSetLayout);
+	if (vkResult == VK_SUCCESS)
+	{
+		LogData("VK Descriptor set layout created!!!");
+	}
+
+	return vkResult;
+}
+
+//Create descriptor sets.
+// Shaders access data using descriptor sets that "point" at our uniform buffers
+// The descriptor sets make use of the descriptor set layouts created above 
+//VkResult createDescriptorSets()
+//{
+//	VkResult vkResult = VK_SUCCESS;
+//
+//
+//}
+
+VkResult createPipelineLayout()
+{
+	VkResult vkResult = VK_SUCCESS;
+
+	VkPipelineLayoutCreateInfo vkPipelineLayoutCreateInfo{};
+	vkPipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	vkPipelineLayoutCreateInfo.pNext = nullptr;
+	vkPipelineLayoutCreateInfo.flags = 0;
+	vkPipelineLayoutCreateInfo.setLayoutCount = 1;
+	vkPipelineLayoutCreateInfo.pSetLayouts = &vkDescriptorSetLayout;
+	vkPipelineLayoutCreateInfo.pushConstantRangeCount = 0;
+	vkPipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
+
+	vkResult = vkCreatePipelineLayout(vkDevice, &vkPipelineLayoutCreateInfo, nullptr, &vkPipelineLayout);
+	if (vkResult == VK_SUCCESS)
+	{
+		LogData("Pipeline layout created!!!");
+	}
 	return vkResult;
 }
