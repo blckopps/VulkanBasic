@@ -702,6 +702,39 @@ void UnInitialize(void)
 		vertexDataPosition.vkBuffer = VK_NULL_HANDLE;
 	}
 
+	//clean shaders
+	if (vkShaderModuleVertex)
+	{
+		vkDestroyShaderModule(vkDevice, vkShaderModuleVertex, nullptr);
+		vkShaderModuleVertex = VK_NULL_HANDLE;
+	}
+
+	if (vkShaderModuleFragment)
+	{
+		vkDestroyShaderModule(vkDevice, vkShaderModuleFragment, nullptr);
+		vkShaderModuleFragment = VK_NULL_HANDLE;
+	}
+
+	//Clean pipelinelayout
+	if (vkPipelineLayout)
+	{
+		vkDestroyPipelineLayout(vkDevice, vkPipelineLayout, nullptr);
+		vkPipelineLayout = VK_NULL_HANDLE;
+	}
+
+	if (vkDescriptorSetLayout)
+	{
+		vkDestroyDescriptorSetLayout(vkDevice, vkDescriptorSetLayout, nullptr);
+		vkDescriptorSetLayout = VK_NULL_HANDLE;
+	}
+
+	//clean pipeline
+	if (vkGraphicsPipeline)
+	{
+		vkDestroyPipeline(vkDevice, vkGraphicsPipeline, nullptr);
+		vkGraphicsPipeline = VK_NULL_HANDLE;
+	}
+
 	//clean renderpass
 	if (vkRenderPass)
 	{
@@ -720,6 +753,19 @@ void UnInitialize(void)
 		vkDestroySemaphore(vkDevice, vkSemaphore_backbuffer, nullptr);
 	if (vkSemaphore_renderComplete)
 		vkDestroySemaphore(vkDevice, vkSemaphore_renderComplete, nullptr);
+
+	for(auto& fb : vkFrameBuffersVector)
+	{
+		vkDestroyFramebuffer(vkDevice, fb, nullptr);
+	}
+
+	//device
+	if (vkDevice)
+	{
+		vkDeviceWaitIdle(vkDevice);	//synchronization
+		vkDestroyDevice(vkDevice, nullptr);
+		vkDevice = VK_NULL_HANDLE;
+	}
 }
 
 //Create vulkan instance
