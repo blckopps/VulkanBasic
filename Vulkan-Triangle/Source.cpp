@@ -37,7 +37,7 @@ HWND gHwnd = NULL;
 FILE* gpFile = NULL;
 BOOL gbActiveWindow = FALSE;
 BOOL bIsInitialized = FALSE;
-
+BOOL bWindowMinimized = FALSE;
 
 //vulkan global variables
 const char* gpSzAppName = "VK-TRIANGLE";
@@ -104,6 +104,8 @@ std::vector<const char*> vkEnabledDeviceExtensions =
 };
 
 //swapchain
+int winWidth = WIN_WIDTH;
+int winHeight = WIN_HEIGHT;
 VkExtent2D vkExtend2D_SwapChain;
 VkSwapchainKHR vkSwapchainKHR;
 uint32_t swapchainImageCount = 0;
@@ -252,8 +254,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		{
 			if (TRUE == gbActiveWindow)
 			{
-				Display();
-				Update();
+				if (bWindowMinimized == FALSE)
+				{
+					VkResult vkResult = Display();
+					if (VK_FALSE != vkResult && VK_SUCCESS != vkResult)
+					{
+						bDone = TRUE;
+					}
+					Update();
+				}
 			}
 		}
 
@@ -267,7 +276,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	void Resize(int, int);
+	VkResult Resize(int, int);
 	void UnInitialize(void);
 	void ToggleFullscreen(void);
 
@@ -289,7 +298,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		gbActiveWindow = FALSE;
 		break;
 	case WM_SIZE:
-		Resize(LOWORD(lParam), HIWORD(lParam));
+		if (SIZE_MINIMIZED == wParam)
+			bWindowMinimized = TRUE;
+		else
+		{
+			bWindowMinimized = FALSE;
+			Resize(LOWORD(lParam), HIWORD(lParam));
+		}
+		
 		break;
 	case WM_KEYDOWN:
 		switch (wParam)
@@ -549,6 +565,10 @@ VkResult Initialize()
 
 VkResult Display()
 {
+	VkResult Resize(int width, int height);
+
+	//Code
+
 	VkResult vkResult = VK_SUCCESS;
 
 	if (bIsInitialized == FALSE)
@@ -566,7 +586,14 @@ VkResult Display()
 	vkResult = vkAcquireNextImageKHR(vkDevice, vkSwapchainKHR, UINT64_MAX, vkSemaphore_backbuffer, VK_NULL_HANDLE, &currentImageIndex);
 	if (vkResult != VK_SUCCESS)
 	{
-		LogData("vkAquireNextImage failed!!!");
+		if (VK_ERROR_OUT_OF_DATE_KHR == vkResult || VK_SUBOPTIMAL_KHR == vkResult)
+		{
+			Resize(winWidth, winHeight);
+		}
+		else
+		{
+			LogData("vkAquireNextImage failed!!!");
+		}
 		return vkResult;
 	}
 
@@ -631,19 +658,170 @@ VkResult Display()
 	vkResult = vkQueuePresentKHR(vkQueue, &vkPresentInfoKHR);
 	if (vkResult != VK_SUCCESS)
 	{
-		LogData("vkQueuePresentKHR failed!!!");
+		if (VK_ERROR_OUT_OF_DATE_KHR == vkResult || VK_SUBOPTIMAL_KHR == vkResult)
+		{
+			Resize(winWidth, winHeight);
+		}
+		else
+		{
+			LogData("vkQueuePresentKHR failed!!!");
+		}
 		return vkResult;
 	}
 
 	return vkResult;
 }
 
-void Resize(int width, int height)
+VkResult Resize(int width, int height)
 {
-	if (0 == height)
+	VkResult createSwapChain();
+	VkResult createImageAndImageViews();
+	VkResult createRenderPass();
+	VkResult createPipelineLayout();
+	VkResult createGraphicsPipeline();
+	VkResult createFrameBuffers();
+	VkResult createCommandBuffers();
+	VkResult BuildCommandBuffers();
+
+	VkResult vkResult = VK_SUCCESS;
+
+	if (0 >= height)
 	{
-		width = 1;
+		height = 1;
 	}
+
+	if (FALSE == bIsInitialized)
+		return VK_ERROR_INITIALIZATION_FAILED;
+
+	bIsInitialized = FALSE;
+
+	winWidth = width;
+	winHeight = height;
+
+	//Wait for device to complete current taks
+	if (vkDevice)
+		vkDeviceWaitIdle(vkDevice);
+
+	if (vkSwapchainKHR == VK_NULL_HANDLE)
+		return VK_ERROR_INITIALIZATION_FAILED;
+
+	//Destory
+	{
+		//destroy framebuffers
+		for (auto& fb : vkFrameBuffersVector)
+		{
+			vkDestroyFramebuffer(vkDevice, fb, nullptr);
+		}
+
+		//destroy command buffers
+		for (auto& commandBuffer : vkCommandBuffersVector)
+		{
+			vkFreeCommandBuffers(vkDevice, vkCommandBufferPool, 1, &commandBuffer);
+		}
+
+		//destroy pipeline
+		if (vkGraphicsPipeline)
+		{
+			vkDestroyPipeline(vkDevice, vkGraphicsPipeline, nullptr);
+			vkGraphicsPipeline = VK_NULL_HANDLE;
+		}
+
+		//destroy pipeline layout
+		if (vkPipelineLayout)
+		{
+			vkDestroyPipelineLayout(vkDevice, vkPipelineLayout, nullptr);
+			vkPipelineLayout = VK_NULL_HANDLE;
+		}
+
+		//clean renderpass
+		if (vkRenderPass)
+		{
+			vkDestroyRenderPass(vkDevice, vkRenderPass, nullptr);
+			vkRenderPass = VK_NULL_HANDLE;
+		}
+
+		//We don't own swapchain images.....
+		//destory swapchain image 
+		/*for (auto& image : swapchainImageVector)
+		{
+			vkDestroyImage(vkDevice, image, nullptr);
+		}*/
+
+
+		//destory swapchain
+		if (vkSwapchainKHR)
+		{
+			vkDestroySwapchainKHR(vkDevice, vkSwapchainKHR, nullptr);
+			vkSwapchainKHR = VK_NULL_HANDLE;
+		}
+	}
+
+	//Recreate
+	{
+		//swapchain
+		vkResult = createSwapChain();
+		if (vkResult != VK_SUCCESS)
+		{
+			LogData("resize createSwapChain failed!!!");
+			return vkResult;
+		}
+
+		// Vulkan images and views
+		vkResult = createImageAndImageViews();
+		if (vkResult != VK_SUCCESS)
+		{
+			LogData("resize createImageAndImageViews failed!!!");
+			return vkResult;
+		}
+
+		vkResult = createPipelineLayout();
+		if (vkResult != VK_SUCCESS)
+		{
+			LogData("resize createPipelineLayout failed!!!");
+			return vkResult;
+		}
+
+		// Create render pass
+		vkResult = createRenderPass();
+		if (vkResult != VK_SUCCESS)
+		{
+			LogData("resize createRenderPass failed!!!");
+			return vkResult;
+		}
+
+		vkResult = createGraphicsPipeline();
+		if (vkResult != VK_SUCCESS)
+		{
+			LogData("resize createGraphicsPipeline failed!!!");
+			return vkResult;
+		}
+
+		vkResult = createFrameBuffers();
+		if (vkResult != VK_SUCCESS)
+		{
+			LogData("resize createFrameBuffers failed!!!");
+			return vkResult;
+		}
+
+		//Create command buffers
+		vkResult = createCommandBuffers();
+		if (vkResult != VK_SUCCESS)
+		{
+			LogData("resize createCommandBuffers failed!!!");
+			return vkResult;
+		}
+
+		//build command buffers
+		vkResult = BuildCommandBuffers();
+		if (vkResult != VK_SUCCESS)
+		{
+			LogData("resize BuildCommandBuffers failed!!!");
+			return vkResult;
+		}
+	}
+
+	bIsInitialized = TRUE;
+	return vkResult;
 }
 
 void Update()
@@ -1058,8 +1236,8 @@ VkResult createSwapChain()
 	else
 	{
 		VkExtent2D vkExtend2D;
-		vkExtend2D.height = WIN_HEIGHT;
-		vkExtend2D.width = WIN_WIDTH;
+		vkExtend2D.height = winHeight;
+		vkExtend2D.width = winWidth;
 
 		vkExtend2D_SwapChain.width = max(cuurentExtWidth, min(cuurentExtWidth, vkExtend2D.width));
 		vkExtend2D_SwapChain.height = max(cuurentExtHeight, min(cuurentExtHeight, vkExtend2D.height));
@@ -1297,7 +1475,7 @@ VkResult BuildCommandBuffers()
 		vkCommandBufferBeginInfo.flags = 0;		// 0 indiacte 2 meanings , first, we will use only primarycommand buffer. second,
 		//we are not going to use this simultaneously between multiple threads.
 
-//2. Begin command buffer
+		//2. Begin command buffer
 		vkResult = vkBeginCommandBuffer(vkCommandBuffersVector[i], &vkCommandBufferBeginInfo);
 		if (vkResult != VK_SUCCESS)
 		{
@@ -1339,8 +1517,8 @@ VkResult BuildCommandBuffers()
 
 
 			//Bind with vertex buffer
-			std::vector<VkDeviceSize> vkDeviceSizeVector(1);
-			vkCmdBindVertexBuffers(vkCommandBuffersVector[i], 0, 1, &vertexDataPosition.vkBuffer, vkDeviceSizeVector.data());
+			std::vector<VkDeviceSize> vkDeviceSizeOffsetVector(1);
+			vkCmdBindVertexBuffers(vkCommandBuffersVector[i], 0, 1, &vertexDataPosition.vkBuffer, vkDeviceSizeOffsetVector.data());
 
 
 			vkCmdDraw(vkCommandBuffersVector[i], 3, 1, 0, 0);
@@ -1613,24 +1791,11 @@ VkShaderModule loadSPIRVShader(const std::string &shaderPath)
 // ***************************************************
 // 
 //Create vertex buffers
-VkResult createVertexBuffer()
+VkResult createVertexBuffer2()
 {
 	// A note on memory management in Vulkan in general:
 	//	This is a very complex topic and while it's fine for an example application to small individual memory allocations that is not
 	//	what should be done a real-world application, where you should allocate large chunks of memory at once instead.
-
-	// Static data like vertex and index buffer should be stored on the device memory for optimal (and fastest) access by the GPU
-	//
-	// To achieve this we use so-called "staging buffers" :
-	// - Create a buffer that's visible to the host (and can be mapped)
-	// - Copy the data to this buffer
-	// - Create another buffer that's local on the device (VRAM) with the same size
-	// - Copy the data from the host to the device using a command buffer
-	// - Delete the host visible (staging) buffer
-	// - Use the device local buffers for rendering
-	//
-	// Note: On unified memory architectures where host (CPU) and GPU share the same memory, staging is not necessary
-	// To keep this sample easy to follow, there is no check for that in place
 
 
 	VkResult vkResult = VK_SUCCESS;
@@ -1715,6 +1880,247 @@ VkResult createVertexBuffer()
 	return vkResult;
 }
 
+//create vertex buffer using stage buffer
+VkResult createVertexBuffer()
+{
+
+	// Static data like vertex and index buffer should be stored on the device memory for optimal (and fastest) access by the GPU
+	//
+	// To achieve this we use so-called "staging buffers" :
+	// - Create a buffer that's visible to the host (and can be mapped)
+	// - Copy the data to this buffer
+	// - Create another buffer that's local on the device (VRAM) with the same size
+	// - Copy the data from the host to the device using a command buffer
+	// - Delete the host visible (staging) buffer
+	// - Use the device local buffers for rendering
+	//
+	// Note: On unified memory architectures where host (CPU) and GPU share the same memory, staging is not necessary
+	// To keep this sample easy to follow, there is no check for that in place
+	
+
+	VkResult vkResult = VK_SUCCESS;
+
+	//1.
+	VertexData vertexData_stagingBuffer_position;
+
+	std::vector<Vertex> vertexBuffer
+	{
+		{0.0f, 1.0f, 0.0f},
+		{-1.0f, -1.0f, 0.0f},
+		{1.0f, -1.0f, 0.0f}
+	};
+
+	uint32_t vertexBufferSize = static_cast<uint32_t>(vertexBuffer.size()) * sizeof(Vertex);
+
+	VkBufferCreateInfo vkBufferCreateInfo_stagingBufferCI{};
+	vkBufferCreateInfo_stagingBufferCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	vkBufferCreateInfo_stagingBufferCI.pNext = NULL;
+	vkBufferCreateInfo_stagingBufferCI.flags = 0;
+	vkBufferCreateInfo_stagingBufferCI.size = vertexBufferSize;
+	vkBufferCreateInfo_stagingBufferCI.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;		//Buffer use as data transfer source
+	vkBufferCreateInfo_stagingBufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;	//Concurrent use or multi thread
+
+
+	vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo_stagingBufferCI, NULL, &vertexData_stagingBuffer_position.vkBuffer);
+	if (VK_SUCCESS != vkResult)
+	{
+		fprintf(gpFile, "createVertexBufferStaging():-Call to VkCreateBuffer() is failed (%d)\n", vkResult);
+		return vkResult;
+	}
+
+	VkMemoryRequirements vkMemoryRequirementsStagingBuffer{};
+	vkGetBufferMemoryRequirements(vkDevice, vertexData_stagingBuffer_position.vkBuffer, &vkMemoryRequirementsStagingBuffer);
+
+	VkMemoryAllocateInfo vkMemoryAllocateInfoStagingBuffer{};
+	vkMemoryAllocateInfoStagingBuffer.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	vkMemoryAllocateInfoStagingBuffer.pNext = nullptr;
+	vkMemoryAllocateInfoStagingBuffer.allocationSize = vkMemoryRequirementsStagingBuffer.size;
+	vkMemoryAllocateInfoStagingBuffer.memoryTypeIndex = 0;
+
+	for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProp.memoryTypeCount; i++)
+	{
+		if (1 == (vkMemoryRequirementsStagingBuffer.memoryTypeBits & 1))
+		{
+			//VK_MEMORY_PROPERTY_HOST_COHERENT_BIT- No need to manage vulkan cache mechanism of flush and mapping as we ordered vulkan to maintain coherancey
+			if (vkPhysicalDeviceMemoryProp.memoryTypes[i].propertyFlags & (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT))	
+			{
+				vkMemoryAllocateInfoStagingBuffer.memoryTypeIndex = i;
+				break;
+			}
+		}
+		vkMemoryRequirementsStagingBuffer.memoryTypeBits >>= 1;
+	}
+
+
+	vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfoStagingBuffer, nullptr, &vertexData_stagingBuffer_position.vkDeviceMemory);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("staging buufer :Failed create device memory!!!");
+		return vkResult;
+	}
+
+	vkResult = vkBindBufferMemory(vkDevice, vertexData_stagingBuffer_position.vkBuffer, vertexData_stagingBuffer_position.vkDeviceMemory, 0);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("Failed bind buffer memory for staging buffer!!!");
+		return vkResult;
+	}
+
+	void* data = nullptr;
+	vkResult = vkMapMemory(vkDevice, vertexData_stagingBuffer_position.vkDeviceMemory, 0, vkMemoryAllocateInfoStagingBuffer.allocationSize, 0, &data);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("stage buffer-Failed to map memory!!!");
+		return vkResult;
+	}
+
+	memcpy(data, vertexBuffer.data(), vertexBufferSize);
+
+	vkUnmapMemory(vkDevice, vertexData_stagingBuffer_position.vkDeviceMemory);
+
+	//2.
+	VkBufferCreateInfo vkBufferCreateInfo{};
+	vkBufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	vkBufferCreateInfo.pNext = nullptr;
+	vkBufferCreateInfo.flags = 0;		
+	vkBufferCreateInfo.size = vertexBufferSize;
+	vkBufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+	vkBufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+	vkResult = vkCreateBuffer(vkDevice, &vkBufferCreateInfo, nullptr, &vertexDataPosition.vkBuffer);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("Failed to create buffer!!!");
+		return vkResult;
+	}
+
+	VkMemoryRequirements vkMemoryRequirements{};
+	vkGetBufferMemoryRequirements(vkDevice, vertexDataPosition.vkBuffer, &vkMemoryRequirements);
+
+	VkMemoryAllocateInfo vkMemoryAllocateInfo{};
+	vkMemoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	vkMemoryAllocateInfo.pNext = nullptr;
+	vkMemoryAllocateInfo.allocationSize = vkMemoryRequirements.size;
+	vkMemoryAllocateInfo.memoryTypeIndex = 0;
+
+	for (uint32_t i = 0; i < vkPhysicalDeviceMemoryProp.memoryTypeCount; i++)
+	{
+		if (1 == (vkMemoryRequirements.memoryTypeBits & 1))
+		{
+			if (vkPhysicalDeviceMemoryProp.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)	//Device visible memory
+			{
+				vkMemoryAllocateInfo.memoryTypeIndex = i;
+				break;
+			}
+		}
+		vkMemoryRequirements.memoryTypeBits >>= 1;
+	}
+
+	//2.Allocate device memory
+	vkResult = vkAllocateMemory(vkDevice, &vkMemoryAllocateInfo, nullptr, &vertexDataPosition.vkDeviceMemory);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("Failed create device memory!!!");
+		return vkResult;
+	}
+
+	vkResult = vkBindBufferMemory(vkDevice, vertexDataPosition.vkBuffer, vertexDataPosition.vkDeviceMemory, 0);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("Failed bind buffer memory!!!");
+		return vkResult;
+	}
+
+	//3.Copy data 
+	//Create cmd buffer
+	VkCommandBufferAllocateInfo vkCommandBufferAllocateInfo{};
+	vkCommandBufferAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	vkCommandBufferAllocateInfo.pNext = nullptr;
+	vkCommandBufferAllocateInfo.commandPool = vkCommandBufferPool;
+	vkCommandBufferAllocateInfo.commandBufferCount = 1;
+	vkCommandBufferAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+
+	VkCommandBuffer vkCommandBuffer = VK_NULL_HANDLE;
+	vkResult = vkAllocateCommandBuffers(vkDevice, &vkCommandBufferAllocateInfo, &vkCommandBuffer);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("vkAllocateCommandBuffers for buffer copy!!!");
+		return vkResult;
+	}
+
+	//4
+	VkCommandBufferBeginInfo vkCommandBufferBeginInfo{};
+	vkCommandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	vkCommandBufferBeginInfo.pNext = nullptr;
+	vkCommandBufferBeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;		//We don't need reset call because of this flag. This will one time submit.
+
+	// Begin command buffer
+	vkResult = vkBeginCommandBuffer(vkCommandBuffer, &vkCommandBufferBeginInfo);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("Failed to begin command Buffer for copy!!!");
+		return vkResult;
+	}
+
+	VkBufferCopy vkBufferCopy{};
+	vkBufferCopy.srcOffset = 0;
+	vkBufferCopy.dstOffset = 0;
+	vkBufferCopy.size = vertexBufferSize;
+
+	vkCmdCopyBuffer(vkCommandBuffer, vertexData_stagingBuffer_position.vkBuffer, vertexDataPosition.vkBuffer, 1, &vkBufferCopy);
+
+	vkResult = vkEndCommandBuffer(vkCommandBuffer);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("Failed to end command Buffer for copy!!!");
+		return vkResult;
+	}
+
+	//5.
+	// We don't need synchronization between command buffers so We don't need dstmask as well.
+	//In display we have 2 command buffers and we need synchronization between then per display call.
+	VkSubmitInfo vkSubmitInfo{};
+	vkSubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	vkSubmitInfo.pNext = nullptr;
+	vkSubmitInfo.commandBufferCount = 1;
+	vkSubmitInfo.pCommandBuffers = &vkCommandBuffer;
+
+	vkResult = vkQueueSubmit(vkQueue, 1, &vkSubmitInfo, VK_NULL_HANDLE);
+	if (VK_SUCCESS != vkResult)
+	{
+		fprintf(gpFile, "vertex copy:- VkQueueSubmit():- Failed!!");
+		return vkResult;
+	}
+
+	//wait for queue as we are in initialize
+	vkResult = vkQueueWaitIdle(vkQueue);
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("vkQueueWaitIdle failed!!!");
+		return vkResult;
+	}
+
+
+	//6.free
+	vkFreeCommandBuffers(vkDevice, vkCommandBufferPool, 1, &vkCommandBuffer);
+	vkCommandBuffer = VK_NULL_HANDLE;
+
+	//free local
+	if (vertexData_stagingBuffer_position.vkDeviceMemory)
+	{
+		vkFreeMemory(vkDevice, vertexData_stagingBuffer_position.vkDeviceMemory, nullptr);
+		vertexData_stagingBuffer_position.vkDeviceMemory = VK_NULL_HANDLE;
+	}
+
+	if (vertexData_stagingBuffer_position.vkBuffer)
+	{
+		vkDestroyBuffer(vkDevice, vertexData_stagingBuffer_position.vkBuffer, nullptr);
+		vertexData_stagingBuffer_position.vkBuffer = VK_NULL_HANDLE;
+	}
+
+	return vkResult;
+}
+
 //Create descriptor set layout
 // Descriptor set layouts define the interface between our application and the shader
 // Basically connects the different shader stages to descriptors for binding uniform buffers, image samplers, etc.
@@ -1795,8 +2201,8 @@ VkResult createGraphicsPipeline()
 	//	layout (location = 0) in vec3 inPos;
 	//	layout (location = 1) in vec3 inColor;
 	std::vector<VkVertexInputAttributeDescription> vkVertexInputAttributeDescriptionVector(1);
-	vkVertexInputAttributeDescriptionVector[0].binding = 0;
-	vkVertexInputAttributeDescriptionVector[0].location = 0;
+	vkVertexInputAttributeDescriptionVector[0].binding = 0;		
+	vkVertexInputAttributeDescriptionVector[0].location = 0;		//layout(location=0) in vec4 vPosition; should be same on both sides
 	vkVertexInputAttributeDescriptionVector[0].format = VK_FORMAT_R32G32B32_SFLOAT;
 	vkVertexInputAttributeDescriptionVector[0].offset = 0;	//useed in interleaved, how much to jump
 
