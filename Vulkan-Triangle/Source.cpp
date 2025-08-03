@@ -257,7 +257,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 				if (bWindowMinimized == FALSE)
 				{
 					VkResult vkResult = Display();
-					if (VK_FALSE != vkResult && VK_SUCCESS != vkResult)
+					if (VK_FALSE != vkResult && VK_SUCCESS != vkResult &&
+						VK_ERROR_OUT_OF_DATE_KHR == vkResult && VK_SUBOPTIMAL_KHR == vkResult)
 					{
 						bDone = TRUE;
 					}
@@ -593,8 +594,8 @@ VkResult Display()
 		else
 		{
 			LogData("vkAquireNextImage failed!!!");
+			return vkResult;
 		}
-		return vkResult;
 	}
 
 	/*
@@ -665,8 +666,8 @@ VkResult Display()
 		else
 		{
 			LogData("vkQueuePresentKHR failed!!!");
+			return vkResult;
 		}
-		return vkResult;
 	}
 
 	return vkResult;
