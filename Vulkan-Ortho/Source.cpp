@@ -543,6 +543,13 @@ VkResult Initialize()
 		return vkResult;
 	}
 
+	vkResult = createDescriptorSetLayout();
+	if (vkResult != VK_SUCCESS)
+	{
+		LogData("createDescriptorSetLayout failed!!!");
+		return vkResult;
+	}
+
 	//12.Create pipeline layout
 	vkResult = createPipelineLayout();
 	if (vkResult != VK_SUCCESS)
@@ -551,7 +558,7 @@ VkResult Initialize()
 		return vkResult;
 	}
 
-	createDescriptorSetLayout();
+	
 
 	//create descriptor  pool
 	vkResult = createDescriptorPool();
@@ -608,10 +615,6 @@ VkResult Initialize()
 		LogData("createFences failed!!!");
 		return vkResult;
 	}
-
-	//////
-
-
 
 	//build command buffer
 	vkResult = BuildCommandBuffers();
