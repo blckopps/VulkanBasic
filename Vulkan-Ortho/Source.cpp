@@ -46,8 +46,8 @@ BOOL bIsInitialized = FALSE;
 BOOL bWindowMinimized = FALSE;
 
 //vulkan global variables
-const char* gpSzAppName = "VK-Orhto";
-const wchar_t* windowName = L"Orhto";
+const char* gpSzAppName = "VK-Ortho";
+const wchar_t* windowName = L"Ortho";
 
 struct Vertex
 {
