@@ -1,0 +1,495 @@
+Log file created and opened successfully!!!
+WndProc():-Program started successfully!
+EnumerateInstanceExtensionProperties filled
+VK_KHR_SURFACE_EXTENSION_NAME and VK_KHR_WIN32_SURFACE_EXTENSION_NAME extensions found
+vkCreateInstance success!!!
+Selected device name *******
+NVIDIA GeForce RTX 4070 Ti
+Physical device selected......
+Required extensions are found
+Vulkan device created!!!!
+Swapchain created!!!
+Command pool created!!!
+VK Descriptor set layout created!!!
+Pipeline layout created!!!
+vkUpdateDescriptorSets called for triangle!!
+vkUpdateDescriptorSets called for rectangle!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Initialize() succeeded
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
+Swapchain created!!!
+Pipeline layout created!!!
+Render pass created!!!
+Graphics pipeline created!!!!!
+Graphics pipeline created!!!!!
+Frame buffers created!!!
