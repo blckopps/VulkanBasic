@@ -187,6 +187,8 @@ VkPipelineLayout vkPipelineLayout = VK_NULL_HANDLE;
 //Graphics pipeline
 VkPipeline vkGraphicsPipeline = VK_NULL_HANDLE;
 
+VkClearDepthStencilValue vkClearDepthStencilValue{};
+VkClearColorValue vkClearColorValue{};
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
 {
@@ -1754,16 +1756,21 @@ VkResult BuildCommandBuffers()
 		}
 
 
-		VkClearColorValue vkClearColorValue{};
 		vkClearColorValue.float32[0] = 0.0f;
 		vkClearColorValue.float32[1] = 0.0f;
 		vkClearColorValue.float32[2] = 1.0f;
 		vkClearColorValue.float32[3] = 1.0f;
+
+		//set default clear depth
+		vkClearDepthStencilValue.depth = 1.0f;	//float
+		vkClearDepthStencilValue.stencil = 0;	//uint32_t
+
 		//Record here
 #pragma region RECORD COMMAND BUFFER
-		std::vector<VkClearValue> vkClearValueVector(1);
+		std::vector<VkClearValue> vkClearValueVector(2);
 
 		vkClearValueVector[0].color = vkClearColorValue;
+		vkClearValueVector[1].depthStencil = vkClearDepthStencilValue;
 
 		//Begin render pass
 		VkRenderPassBeginInfo vkRenderPassBeginInfo{};
@@ -1881,7 +1888,7 @@ VkResult createRenderPass()
 	vkSubpassDescription.pPreserveAttachments = nullptr;
 
 
-	//create iinfo for Render Pass
+	//create info for Render Pass
 	VkRenderPassCreateInfo vkRenderPassCreateInfo{};
 	vkRenderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	vkRenderPassCreateInfo.pNext = nullptr;
@@ -2764,7 +2771,17 @@ VkResult createGraphicsPipeline()
 	vkPipelineViewportStateCreateInfo.pScissors = &vkRect2DScissor;
 
 	//6.DEPTH STATE
-	//Not used Rn
+	VkPipelineDepthStencilStateCreateInfo vkPipelineDepthStencileStateCreateInfo{};
+	vkPipelineDepthStencileStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	vkPipelineDepthStencileStateCreateInfo.depthTestEnable = VK_TRUE;
+	vkPipelineDepthStencileStateCreateInfo.depthWriteEnable = VK_TRUE;
+	vkPipelineDepthStencileStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+	vkPipelineDepthStencileStateCreateInfo.depthBoundsTestEnable = VK_FALSE;
+	vkPipelineDepthStencileStateCreateInfo.back.failOp = VK_STENCIL_OP_KEEP;
+	vkPipelineDepthStencileStateCreateInfo.back.passOp = VK_STENCIL_OP_KEEP;
+	vkPipelineDepthStencileStateCreateInfo.back.compareOp = VK_COMPARE_OP_ALWAYS;
+	vkPipelineDepthStencileStateCreateInfo.front = vkPipelineDepthStencileStateCreateInfo.back;
+
 
 	//7.Dynamic state
 	//We don;t have any rn
@@ -2824,7 +2841,7 @@ VkResult createGraphicsPipeline()
 	vkGraphicsPipelineCreateInfo.pRasterizationState = &vkPipelineRasterizationStateCreateInfo;
 	vkGraphicsPipelineCreateInfo.pColorBlendState = &vkPipelineColorBlendStateCreateInfo;
 	vkGraphicsPipelineCreateInfo.pViewportState = &vkPipelineViewportStateCreateInfo;
-	vkGraphicsPipelineCreateInfo.pDepthStencilState = nullptr;
+	vkGraphicsPipelineCreateInfo.pDepthStencilState = &vkPipelineDepthStencileStateCreateInfo;
 	vkGraphicsPipelineCreateInfo.pDynamicState = nullptr;
 	vkGraphicsPipelineCreateInfo.pMultisampleState = &vkPipelineMultisampleStateCreateInfo;
 	vkGraphicsPipelineCreateInfo.stageCount = static_cast<uint32_t>(vkPipelineShaderStageCreateInfoVector.size());
